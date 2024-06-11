@@ -152,7 +152,7 @@ app.post('/createMentor', async (req, res) => {
 });
 
 app.post('/signup', async (req, res) => {
-  const { email, password } = req.body;
+  const { email,firstName,lastName, password,address,bio,expertise,occupation } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({
@@ -175,6 +175,12 @@ app.post('/signup', async (req, res) => {
     const userRef = db.collection('Users').doc(userRecord.uid);
     await userRef.set({
       email: userRecord.email,
+      firstName: firstName,
+      lastName: lastName,
+      address: address,
+      bio: bio,
+      expertise: expertise,
+      occupation: occupation,
       password: hashedPassword, // Store hashed password
       token: getToken(userRecord)
     });
@@ -182,6 +188,14 @@ app.post('/signup', async (req, res) => {
     res.status(201).json({
       uid: userRecord.uid,
       email: userRecord.email,
+      firstName: firstName,
+      lastName: lastName,
+      address: address,
+      bio: bio,
+      expertise: expertise,
+      occupation: occupation,
+      success:true,
+      message:'User Created Successfully'
     });
   } catch (err) {
     res.status(500).json({
@@ -192,18 +206,38 @@ app.post('/signup', async (req, res) => {
   }
 });
 
-  app.post("/signin", async (req, res) => {
-    const { email, password } = req.body;
-    try {
-      const user = await userService.authenticate(email, password);
-      res.json(user);
-    } catch (err) {
-      res.status(404).json({ 
-        success:false,
-        message:"no user found"
+app.post("/signin", async (req, res) => {
+  const { email, password } = req.body;
+  try {
+      const userRef = db.collection('Users').where('email', '==', email);
+      const snapshot = await userRef.get();
+      if (snapshot.empty) {
+          throw new Error("No user found");
+      }
+
+      let user;
+      snapshot.forEach(doc => {
+          user = doc.data();
+          user.uid = doc.id;
       });
-    }
-  });
+
+      // Check if password matches
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      if (!passwordMatch) {
+          throw new Error("Incorrect password");
+      }
+
+      // If everything is correct, respond with the user data
+      delete user.password; // Remove password from the response
+      res.json(user);
+  } catch (err) {
+      res.status(404).json({ 
+          success: false,
+          message: err.message
+      });
+  }
+});
+
 
 app.get('/users/:id', cors(),async (req,res) =>{
   const snapshot = await db.collection("Users").get();
