@@ -1,4 +1,3 @@
-
 const express = require('express');
 const app = express();
 const bodyParser = require("body-parser");
@@ -8,6 +7,7 @@ var serviceAccount = require("./secret/config.json");
 var multer = require('multer');
 var path = require('path');
 const saltedMd5=require('salted-md5')
+const bcrypt = require('bcrypt');
 var { getToken, isAuth } =require('./util');
 app.use(cors());
 const upload=multer({storage: multer.memoryStorage()})
@@ -79,34 +79,119 @@ collection.push(user);
 return collection;y
 }
 
-
-app.post("/signup", async (req, res) => {
-    const { email, password } = req.body;
-    try {
-
-        const userRecord = await userService.addUser({
-            email,
-            password,
-    });
-          const userRef = admin.firestore().collection("Users").doc(userRecord.uid);
-          await userRef.set({
-            email: userRecord.email,
-            password: userRecord.password,
-            token: getToken(userRecord)
-          });
-      
-          res.status(201).json({
-            uid: userRecord.uid,
-            email: userRecord.email,
-          });
-    } catch (err) {
-      res.json({
-        success:false,
-        message:"Error creating user"
-       });
-    }
+// Function to create a user with a role
+const createUserWithRole = async (email, password, role) => {
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const userRecord = await admin.auth().createUser({
+    email: email,
+    password: password,
   });
-  
+
+  await db.collection('Users').doc(userRecord.uid).set({
+    email: userRecord.email,
+    password: hashedPassword, // Store hashed password
+    role: role, // Add user role
+    token: getToken({ uid: userRecord.uid, email: userRecord.email, role: role })
+  });
+
+  return userRecord;
+};
+
+// Endpoint to create an admin user
+app.post('/createAdmin', async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({
+      success: false,
+      message: 'Email and password are required'
+    });
+  }
+
+  try {
+    const userRecord = await createUserWithRole(email, password, 'admin');
+    res.status(201).json({
+      uid: userRecord.uid,
+      email: userRecord.email,
+      role: 'admin',
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Error creating admin user',
+      error: err.message,
+    });
+  }
+});
+
+// Endpoint to create a mentor user
+app.post('/createMentor', async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({
+      success: false,
+      message: 'Email and password are required'
+    });
+  }
+
+  try {
+    const userRecord = await createUserWithRole(email, password, 'mentor');
+    res.status(201).json({
+      uid: userRecord.uid,
+      email: userRecord.email,
+      role: 'mentor',
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Error creating mentor user',
+      error: err.message,
+    });
+  }
+});
+
+app.post('/signup', async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({
+      success: false,
+      message: 'Email and password are required'
+    });
+  }
+
+  try {
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user using Firebase Authentication
+    const userRecord = await admin.auth().createUser({
+      email: email,
+      password: password,
+    });
+
+    // Save user details to Firestore
+    const userRef = db.collection('Users').doc(userRecord.uid);
+    await userRef.set({
+      email: userRecord.email,
+      password: hashedPassword, // Store hashed password
+      token: getToken(userRecord)
+    });
+
+    res.status(201).json({
+      uid: userRecord.uid,
+      email: userRecord.email,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Error creating user',
+      error: err.message,
+    });
+  }
+});
+
   app.post("/signin", async (req, res) => {
     const { email, password } = req.body;
     try {

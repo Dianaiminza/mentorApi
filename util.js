@@ -1,5 +1,5 @@
 var  jwt =require('jsonwebtoken');
-var config =require('./secret/config');
+var config =require('./configuration');
 const getToken = (user) => {
   return jwt.sign(
     {
