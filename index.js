@@ -314,25 +314,7 @@ app.delete('/user/delete/:id', async (req, res) => {
        console.log('Error getting users', err);
      });
 });
-app.post("/users", cors(),async (req,res)=>{
- var title     = req.body.title;
- var description = req.body.description;
- var url   = req.body.url;
- var blogid = req.body.blogid;
-  var blogimg=req.body.blogimg; 
-   var blog = {
-       title: title,
-       description: description,
-       blogid: blogid,
-       url: url,
-       blogimg:blogimg
-     };
-     res.json({
-       blog
-     }) 
-       await storeBlog(blog);
-       return blog
-})
+
 
 app.listen(process.env.PORT || 5000, function(){
     console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
