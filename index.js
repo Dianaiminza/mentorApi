@@ -549,6 +549,64 @@ app.put('/sessions/:sessionId/accept', async (req, res) => {
   }
 });
 
+app.put('/sessions/:sessionId/reject', async (req, res) => {
+  const { sessionId } = req.params;
+  const { mentorId } = req.body;
+
+  if (!mentorId) {
+    return res.status(400).json({
+      success: false,
+      message: 'mentorId is required'
+    });
+  }
+
+  try {
+    // Retrieve the mentorship session
+    const sessionRef = db.collection('MentorshipSessions').doc(sessionId);
+    const sessionDoc = await sessionRef.get();
+
+    if (!sessionDoc.exists) {
+      return res.status(404).json({
+        success: false,
+        message: 'Mentorship session not found'
+      });
+    }
+
+    const sessionData = sessionDoc.data();
+
+    if (sessionData.mentorId !== mentorId) {
+      return res.status(403).json({
+        success: false,
+        message: 'You are not authorized to reject this session'
+      });
+    }
+
+    // Update the status of the session to 'rejected'
+    await sessionRef.update({
+      status: 'rejected',
+      rejectedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    const updatedSessionDoc = await sessionRef.get();
+    const updatedSessionData = updatedSessionDoc.data();
+
+    res.status(200).json({
+      success: true,
+      message: 'Mentorship session rejected',
+      data: {
+        sessionId: sessionId,
+        ...updatedSessionData,
+      }
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Error rejecting mentorship session',
+      error: err.message,
+    });
+  }
+});
+
 app.listen(process.env.PORT || 5000, function(){
     console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
   });
