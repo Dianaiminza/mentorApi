@@ -214,6 +214,7 @@ app.post('/signup', async (req, res) => {
       password: password,
     });
 
+
     // Save user details to Firestore
     const userRef = db.collection('Users').doc(userRecord.uid);
     await userRef.set({
@@ -435,6 +436,61 @@ app.delete('/mentor/delete/:id', async (req, res) => {
         console.log('Error getting mentors', err);
       });
  });
+
+ app.post('/sessions', async (req, res) => {
+  const { mentorId, questions, menteeEmail } = req.body;
+
+  if (!mentorId || !menteeEmail) {
+    return res.status(400).json({
+      success: false,
+      message: 'mentorId and menteeEmail are required'
+    });
+  }
+
+  try {
+    // Retrieve the mentee user record using email
+    const menteeSnapshot = await db.collection('Users').where('email', '==', menteeEmail).get();
+    if (menteeSnapshot.empty) {
+      return res.status(404).json({
+        success: false,
+        message: 'Mentee user not found'
+      });
+    }
+
+    let mentee;
+    menteeSnapshot.forEach(doc => {
+      mentee = { uid: doc.id, ...doc.data() };
+    });
+
+    // Create a new mentorship session
+    const sessionData = {
+      mentorId,
+      menteeId: mentee.uid,
+      questions,
+      menteeEmail,
+      status: 'pending', // Default status is pending
+      createdAt: admin.firestore.FieldValue.serverTimestamp()
+    };
+
+    const sessionRef = await db.collection('MentorshipSessions').add(sessionData);
+    const sessionId = sessionRef.id;
+
+    res.status(201).json({
+      success: true,
+      data: {
+        sessionId,
+        ...sessionData
+      }
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Error creating mentorship session',
+      error: err.message,
+    });
+  }
+});
+
 
 
 app.listen(process.env.PORT || 5000, function(){
