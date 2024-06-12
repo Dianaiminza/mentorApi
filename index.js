@@ -607,6 +607,51 @@ app.put('/sessions/:sessionId/reject', async (req, res) => {
   }
 });
 
+app.get('/sessions', async (req, res) => {
+  const { userId, role } = req.query;
+
+  if (!userId || !role) {
+    return res.status(400).json({
+      success: false,
+      message: 'userId and role are required'
+    });
+  }
+
+  try {
+    let sessions = [];
+
+    if (role === 'mentee') {
+      // Fetch sessions created by the user as a mentee
+      const menteeSessionsSnapshot = await db.collection('MentorshipSessions').where('menteeId', '==', userId).get();
+      menteeSessionsSnapshot.forEach(doc => {
+        sessions.push({ id: doc.id, ...doc.data() });
+      });
+    } else if (role === 'mentor') {
+      // Fetch sessions assigned to the user as a mentor
+      const mentorSessionsSnapshot = await db.collection('MentorshipSessions').where('mentorId', '==', userId).get();
+      mentorSessionsSnapshot.forEach(doc => {
+        sessions.push({ id: doc.id, ...doc.data() });
+      });
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid role specified'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: sessions
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching mentorship sessions',
+      error: err.message,
+    });
+  }
+});
+
 app.listen(process.env.PORT || 5000, function(){
     console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
   });
