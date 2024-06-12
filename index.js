@@ -125,8 +125,25 @@ app.post('/createAdmin', async (req, res) => {
 });
 
 // Endpoint to create a mentor user
+const createMentors = async (email, password, role) => {
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const userRecord = await admin.auth().createUser({
+    email: email,
+    password: password,
+  });
+
+  await db.collection('Mentors').doc(userRecord.uid).set({
+    email: userRecord.email,
+    password: hashedPassword, // Store hashed password
+    role: role, // Add user role
+    token: getToken({ uid: userRecord.uid, email: userRecord.email, role: role })
+  });
+
+  return userRecord;
+};
+
 app.post('/createMentor', async (req, res) => {
-  const { email, password } = req.body;
+  const { email,firstName,lastName, password,address,bio,expertise,occupation } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({
@@ -134,22 +151,48 @@ app.post('/createMentor', async (req, res) => {
       message: 'Email and password are required'
     });
   }
-
   try {
-    const userRecord = await createUserWithRole(email, password, 'mentor');
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create Mentor
+    const userRecord = await createMentors(email, password, 'mentor');
+
+    // Save mentor details to Firestore
+    const userRef = db.collection('Mentors').doc(userRecord.uid);
+    await userRef.set({
+      email: userRecord.email,
+      firstName: firstName,
+      lastName: lastName,
+      address: address,
+      bio: bio,
+      expertise: expertise,
+      occupation: occupation,
+      password: hashedPassword, // Store hashed password
+      token: getToken(userRecord)
+    });
+
     res.status(201).json({
       uid: userRecord.uid,
       email: userRecord.email,
-      role: 'mentor',
+      firstName: firstName,
+      lastName: lastName,
+      address: address,
+      bio: bio,
+      expertise: expertise,
+      occupation: occupation,
+      success:true,
+      message:'Mentor Created Successfully'
     });
   } catch (err) {
     res.status(500).json({
       success: false,
-      message: 'Error creating mentor user',
+      message: 'Error creating mentor',
       error: err.message,
     });
   }
 });
+ 
 
 app.post('/signup', async (req, res) => {
   const { email,firstName,lastName, password,address,bio,expertise,occupation } = req.body;
