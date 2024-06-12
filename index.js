@@ -304,6 +304,28 @@ app.get('/users/:id', cors(),async (req,res) =>{
  }   
 });
 
+app.get('/mentors/:id', cors(),async (req,res) =>{
+  const snapshot = await db.collection("Mentors").get();
+  snapshot.forEach((doc) => {
+   console.log(doc.id, '=>', doc.data());
+    user=doc.data();
+   user['id']=doc.id
+     
+    })
+ console.log(user)
+ if(user){
+  res.json({
+    user
+  })
+ }else
+ {
+   res.json({
+     success:false,
+     message:"no mentor found"
+   })
+ }   
+});
+
 app.get("/users",cors(), async (req,res)=>{
  
  var generatedUser = await getUsers();
@@ -315,6 +337,19 @@ app.get("/users",cors(), async (req,res)=>{
    message:"no users available"
  })
 })
+
+app.get("/mentors",cors(), async (req,res)=>{
+ 
+  var generatedUser = await getMentors();
+  if (generatedUser != null)
+  res.json(generatedUser)
+  else
+  res.json({
+    success:false,
+    message:"no mentors available"
+  })
+ })
+
 app.put('/user/:id', isAuth, async (req, res) => {
     const userId = req.params.id;
     var usersRef = db.collection('Users');
@@ -325,7 +360,7 @@ app.put('/user/:id', isAuth, async (req, res) => {
  .then(snapshot => {
     snapshot.forEach(doc => {
       console.log(doc.id, '=>', doc.data());
-      var updateUser = db.collection('User').doc(doc.id).update({
+      var updateUser = db.collection('Users').doc(doc.id).update({
         name,
         email,
         password,
@@ -340,13 +375,38 @@ app.put('/user/:id', isAuth, async (req, res) => {
   })
 });
 
+app.put('/mentor/:id', isAuth, async (req, res) => {
+  const mentorId = req.params.id;
+  var mentorsRef = db.collection('Mentors');
+var name   = req.body.name || mentor.name;
+var email = req.body.email || mentor.email;
+var password = req.body.password || mentor.password;
+var query = mentorsRef.where('mentorId', '==', req.params.id).get()
+.then(snapshot => {
+  snapshot.forEach(doc => {
+    console.log(doc.id, '=>', doc.data());
+    var updateMentor = db.collection('Mentors').doc(doc.id).update({
+      name,
+      email,
+      password,
+      }).then(() => {
+        res.json({
+          success:true,
+          message:"successfully updated mentor details"
+        })
+      } 
+      );
+  });
+})
+});
+
 app.delete('/user/delete/:id', async (req, res) => {
  var postsRef = db.collection('Users');
  var query = postsRef.where('userId', '==', req.params.id).get()
      .then(snapshot => {
        snapshot.forEach(doc => {
          console.log(doc.id, '=>', doc.data());
-         var deleteDoc = db.collection('User').doc(doc.id).delete();
+         var deleteDoc = db.collection('Users').doc(doc.id).delete();
        });
      })
      res.json({
@@ -357,6 +417,24 @@ app.delete('/user/delete/:id', async (req, res) => {
        console.log('Error getting users', err);
      });
 });
+
+app.delete('/mentor/delete/:id', async (req, res) => {
+  var postsRef = db.collection('Mentors');
+  var query = postsRef.where('mentorId', '==', req.params.id).get()
+      .then(snapshot => {
+        snapshot.forEach(doc => {
+          console.log(doc.id, '=>', doc.data());
+          var deleteDoc = db.collection('Mentors').doc(doc.id).delete();
+        });
+      })
+      res.json({
+        success:true,
+        message:"mentor successfully deleted"
+      })
+      .catch(err => {
+        console.log('Error getting mentors', err);
+      });
+ });
 
 
 app.listen(process.env.PORT || 5000, function(){
