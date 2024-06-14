@@ -22,4 +22,5 @@
 1. Server side Framework: Node/Express
 2. Linting Library: ESLint
 3. Testing Framework: Mocha
+4. Firestore Database
    
