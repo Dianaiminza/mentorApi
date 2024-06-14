@@ -652,6 +652,110 @@ app.get('/sessions', async (req, res) => {
   }
 });
 
+app.post('/sessions/:sessionId/review', async (req, res) => {
+  const { sessionId } = req.params;
+  const { menteeId, rating, comments } = req.body;
+
+  if (!menteeId || typeof rating !== 'number' || !comments) {
+    return res.status(400).json({
+      success: false,
+      message: 'menteeId, rating, and comments are required'
+    });
+  }
+
+  try {
+    // Retrieve the mentorship session
+    const sessionRef = db.collection('MentorshipSessions').doc(sessionId);
+    const sessionDoc = await sessionRef.get();
+
+    if (!sessionDoc.exists) {
+      return res.status(404).json({
+        success: false,
+        message: 'Mentorship session not found'
+      });
+    }
+
+    const sessionData = sessionDoc.data();
+
+    if (sessionData.menteeId !== menteeId) {
+      return res.status(403).json({
+        success: false,
+        message: 'You are not authorized to review this session'
+      });
+    }
+
+    // Add the review to the MentorshipSessions document
+    await sessionRef.update({
+      review: {
+        rating,
+        comments,
+        reviewDate: admin.firestore.FieldValue.serverTimestamp()
+      }
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Review added successfully',
+      data: {
+        sessionId,
+        menteeId,
+        rating,
+        comments,
+        reviewDate: new Date().toISOString() // Use server timestamp in production
+      }
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Error adding review',
+      error: err.message,
+    });
+  }
+});
+
+// DELETE endpoint to remove a review
+app.delete('/sessions/:sessionId/review', async (req, res) => {
+  const { sessionId } = req.params;
+
+  try {
+      // Retrieve the mentorship session
+      const sessionRef = db.collection('MentorshipSessions').doc(sessionId);
+      const sessionDoc = await sessionRef.get();
+
+      if (!sessionDoc.exists) {
+          return res.status(404).json({
+              success: false,
+              message: 'Mentorship session not found'
+          });
+      }
+
+      const sessionData = sessionDoc.data();
+
+      if (!sessionData.review) {
+          return res.status(404).json({
+              success: false,
+              message: 'No review found for this session'
+          });
+      }
+
+      // Delete the review from the MentorshipSessions document
+      await sessionRef.update({
+          review: admin.firestore.FieldValue.delete()
+      });
+
+      res.status(200).json({
+          success: true,
+          message: 'Review deleted successfully'
+      });
+  } catch (err) {
+      res.status(500).json({
+          success: false,
+          message: 'Error deleting review',
+          error: err.message,
+      });
+  }
+});
+
 app.listen(process.env.PORT || 5000, function(){
     console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
   });
