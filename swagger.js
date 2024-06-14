@@ -4,12 +4,17 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Mentor API',
-      version: '1.0.0',
-      description: 'API documentation for Mentor API application',
+        title: 'Mentorship API',
+        version: '1.0.0',
+        description: 'API for Mentorship Application'
     },
-  },
-  apis: ['./index.js'], // Path to the API routes
+    servers: [
+        {
+            url: 'http://localhost:5000'
+        }
+    ]
+},
+apis: ['index.js'] // Path to the API routes
 };
 const swaggerSpec = swaggerJSDoc(options);
 module.exports = swaggerSpec;
