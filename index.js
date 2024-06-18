@@ -10,6 +10,7 @@ const saltedMd5=require('salted-md5')
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./swagger');
 const bcrypt = require('bcrypt');
+const serverless = require("serverless-http");
 var { getToken, isAuth } =require('./util');
 app.use(cors());
 app.use(bodyParser.json());
@@ -1724,4 +1725,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.listen(process.env.PORT || 5000, function(){
   console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
 });
+
+app.use("/.netlify/functions/app", app);
+module.exports.handler = serverless(app);
 
