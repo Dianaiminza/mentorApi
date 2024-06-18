@@ -1,20 +1,91 @@
-const app = require('./index');
-const supertest = require('supertest');
-const request = supertest(app);
-const expect = require("chai").expect;
-  
-describe("POST /signup", function() {
-  it("should return status code 200 if the user is successfully created", function(done) {
-    request
+const request = require('supertest');
+const app = require('./index.js');
+
+
+describe('POST /signup', () => {
+  it('should create a new user', async () => {
+    const userData = {
+      email: 'kakash@example.com',
+      firstName: 'John',
+      lastName: 'Doe',
+      password: 'testpassword',
+      address: '123 Test St',
+      bio: 'Test bio',
+      expertise: 'Test expertise',
+      occupation: 'Test occupation'
+    };
+
+    const response = await request(app)
       .post('/signup')
-      .send({"email": "test@example.com", "password": "123456"})
-      .expect(200)
-      .end(function(err, res) {
-        if (err) return done(err);
-        done();
-      });
+      .send(userData)
+      .expect(201);
+
+    // Verify the response
+    const { body } = response;
+    expect(body).to.have.property('uid');
+    expect(body).to.have.property('email', userData.email);
+    expect(body).to.have.property('firstName', userData.firstName);
+    expect(body).to.have.property('lastName', userData.lastName);
+    expect(body).to.have.property('address', userData.address);
+    expect(body).to.have.property('bio', userData.bio);
+    expect(body).to.have.property('expertise', userData.expertise);
+    expect(body).to.have.property('occupation', userData.occupation);
+    expect(body).to.have.property('success', true);
+    expect(body).to.have.property('message', 'User Created Successfully');
+  });
+
+  it('should return 400 if email or password is missing', async () => {
+    const userData = {
+      email: 'kakash@example.com',
+      firstName: 'John',
+      lastName: 'Doe',
+      password: 'testpassword',
+      address: '123 Test St',
+      bio: 'Test bio',
+      expertise: 'Test expertise',
+      occupation: 'Test occupation'
+    };
+
+    // Remove password to simulate missing password
+    delete userData.password;
+
+    const response = await request(app)
+      .post('/signup')
+      .send(userData)
+      .expect(400);
+
+    // Verify the response
+    const { body } = response;
+    expect(body).to.have.property('success', false);
+    expect(body).to.have.property('message', 'Email and password are required');
+  });
+
+  it('should return 500 if there is an error creating user', async () => {
+    const userData = {
+      email: 'test@example.com',
+      firstName: 'John',
+      lastName: 'Doe',
+      password: 'testpassword',
+      address: '123 Test St',
+      bio: 'Test bio',
+      expertise: 'Test expertise',
+      occupation: 'Test occupation'
+    };
+
+    // Mocking an error by using an existing email
+    const response = await request(app)
+      .post('/signup')
+      .send(userData)
+      .expect(500);
+
+    // Verify the response
+    const { body } = response;
+    expect(body).to.have.property('success', false);
+    expect(body).to.have.property('message', 'Error creating user');
+    expect(body).to.have.property('error');
   });
 });
+
 
 describe("POST /signin", function() {
   it("it should have status code 200 if the user successfully logs in", function(done) {
