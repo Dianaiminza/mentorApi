@@ -19,14 +19,14 @@
     "firebase": "^10.11.1",
     "firebase-admin": "^12.1.1",
     "https": "^1.0.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.2",
     "mongodb": "^3.6.4",
     "mongoose": "^5.12.0",
     "mpesa-api": "^3.0.2",
     "multer": "^1.4.2",
     "multer-s3": "^2.9.0",
-    "netlify-cli": "^17.28.0",
-    "netlify-lambda": "^2.0.16",
+    "netlify-cli": "^17.5.1",
+    "netlify-lambda": "^0.4.0",
     "node": "^16.3.0",
     "salted-md5": "^4.0.8",
     "serverless-http": "^3.2.0",
@@ -35,13 +35,12 @@
     "swagger-ui-express": "^5.0.1",
     "unirest": "^0.6.0"
   },
-  
   "devDependencies": {
-     "@types/bcrypt": "^5.0.2",
+    "@types/bcrypt": "^5.0.2",
     "@types/multer": "^1.4.11",
     "@types/swagger-ui-express": "^4.1.6",
     "chai": "^5.1.1",
-    "mocha": "^8.4.0",
+    "mocha": "^10.4.0",
     "request": "^2.88.2",
     "supertest": "^6.3.4"
   },
@@ -51,7 +50,6 @@
       "/node_modules/"
     ]
   },
-
   "keywords": [],
   "author": "",
   "license": "ISC"
