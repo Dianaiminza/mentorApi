@@ -2,7 +2,7 @@
 FROM node:14
 
 # Create and change to the app directory
-WORKDIR /usr/src/app
+WORKDIR /Mentor
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
@@ -19,4 +19,4 @@ EXPOSE 80
 EXPOSE 443
 
 # Command to run the application
-CMD ["node", "src/index.js"]
+CMD ["node", "index.js"]
