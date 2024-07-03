@@ -1722,9 +1722,8 @@ app.delete('/sessions/:sessionId/review', async (req, res) => {
 
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Your application routes go here...
-app.listen(process.env.PORT, '0.0.0.0', () => {
-  console.log(`Server is running on port ${process.env.PORT}`);
+app.listen(process.env.PORT || 3000, function(){
+  console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
 });
-
 
 
