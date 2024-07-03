@@ -1,26 +1,47 @@
-﻿# MentorApi
+# Mentor API
 
-## Features
+# Overview
 
-1. Users can sign up.
-2. Users can sign in.
-3. Admin can change a user to a mentor.
-4. Users can view mentors.
-5. Users can view a specific mentor.
-6. Users can create a mentorship session request with a mentor.
-7. A mentor can accept a mentorship session request.
-8. A mentor can decline a mentorship session request.
+The Mentor API is a robust and scalable backend service designed to facilitate mentorship programs. It provides endpoints for managing mentors, mentees, sessions, and feedback, allowing for seamless integration into various mentorship platforms.
 
-## Optional Features
+# Features
+- User Management: Register, authenticate, and manage mentors and mentees.
+- Session Scheduling: Create, update, and manage mentorship sessions.
+- Feedback System: Collect and analyze feedback from sessions.
+- Secure Authentication: JWT-based authentication for secure API access.
 
-1. Users can view all their mentorship sessions.
-2. Users can review a mentor after a mentorship session.
-3. Admin can delete a review deemed as inappropriate.
+# Technologies Used
+- Node.js: Runtime environment for executing JavaScript on the server.
+- Express.js: Fast, unopinionated, minimalist web framework for Node.js.
+- Firebase: Real-time NoSQL database for flexible and scalable data storage.
+- JWT: JSON Web Tokens for secure user authentication.
+- Bcrypt: Library for hashing passwords securely.
 
-## Tools
+# Getting Started
+# Prerequisites
+- Node.js (v16 or later)
+- Firebase (set up your Firebase project and Firestore database)
+  
+# Installation
 
-1. Server side Framework: Node/Express
-2. Linting Library: ESLint
-3. Testing Framework: Mocha
-4. Firestore Database
-   
+# Clone the repository:
+git clone https://github.com/Dianaiminza/MentorApi.git
+
+cd MentorApi
+
+# Install dependencies:
+npm install
+
+# Set up environment variables:
+
+Create a .env file in the root directory and add the following variables:
+
+PORT=5000
+
+JWT_SECRET=your_jwt_secret
+
+# Start the server:
+
+npm start
+
+
