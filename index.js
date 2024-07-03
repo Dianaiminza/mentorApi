@@ -9,7 +9,7 @@ var path = require('path');
 const saltedMd5=require('salted-md5')
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./swagger');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const serverless = require("serverless-http");
 var { getToken, isAuth } =require('./util');
 app.use(cors());
@@ -1720,10 +1720,11 @@ app.delete('/sessions/:sessionId/review', async (req, res) => {
   }
 });
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Your application routes go here...
-app.listen(process.env.PORT || 5000, function(){
-  console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
+app.listen(process.env.PORT, '0.0.0.0', () => {
+  console.log(`Server is running on port ${port}`);
 });
+
 
 
