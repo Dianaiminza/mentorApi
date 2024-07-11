@@ -161,13 +161,14 @@ app.post('/createAdmin', async (req, res) => {
 
   try {
 
-    const existingAdmin = await User.findOne({ role: 'admin' });
-    if (existingAdmin) {
-      return res.status(400).json({
-        success: false,
-        message: 'An admin already exists. Cannot create another admin.'
-      });
-    }
+     // Check if an admin already exists in the Users collection
+     const existingAdminSnapshot = await db.collection('Users').where('role', '==', 'admin').get();
+     if (!existingAdminSnapshot.empty) {
+       return res.status(400).json({
+         success: false,
+         message: 'An admin already exists. Cannot create another admin.'
+       });
+     }
     const userRecord = await createUserWithRole(email, password, 'admin');
     res.status(201).json({
       uid: userRecord.uid,
