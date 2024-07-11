@@ -160,6 +160,14 @@ app.post('/createAdmin', async (req, res) => {
   }
 
   try {
+
+    const existingAdmin = await User.findOne({ role: 'admin' });
+    if (existingAdmin) {
+      return res.status(400).json({
+        success: false,
+        message: 'An admin already exists. Cannot create another admin.'
+      });
+    }
     const userRecord = await createUserWithRole(email, password, 'admin');
     res.status(201).json({
       uid: userRecord.uid,
@@ -288,6 +296,14 @@ app.post('/createMentor', async (req, res) => {
     });
   }
   try {
+    // Check if a mentor already exists in the database
+    const existingMentor = await db.collection('Mentors').where('email', '==', email).get();
+    if (!existingMentor.empty) {
+      return res.status(400).json({
+        success: false,
+        message: 'A mentor with this email already exists. Cannot create another mentor.'
+      });
+    }
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -426,6 +442,15 @@ app.post('/signup', async (req, res) => {
   }
 
   try {
+
+    // Check if a user already exists in the database
+    const existingMentor = await db.collection('Users').where('email', '==', email).get();
+    if (!existingMentor.empty) {
+      return res.status(400).json({
+        success: false,
+        message: 'A user with this email already exists. Cannot create another user.'
+      });
+    }
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
