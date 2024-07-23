@@ -1015,7 +1015,7 @@ app.delete('/user/delete/:id', async (req, res) => {
   const { uid } = req.params;
 
   // Check if the UID is a valid string and has exactly 32 characters
-  if (typeof uid !== 'string' || uid.trim() === '') {
+  if (typeof uid == 'string' || uid.trim() === '') {
     return res.status(400).json({
       success: false,
       message: 'Invalid UID provided.',
@@ -1028,7 +1028,7 @@ app.delete('/user/delete/:id', async (req, res) => {
     // Delete the user from Firebase Authentication
     await admin.auth().deleteUser(uid);
     console.log(`Deleted user from Firebase Authentication with ID: ${uid}`); // Debugging line
-    
+
     // Optionally, delete the user from Firestore
     await db.collection('Users').doc(uid).delete();
     console.log(`Deleted user from Firestore with ID: ${uid}`); // Debugging line
@@ -1085,7 +1085,7 @@ app.delete('/mentor/delete/:id', async (req, res) => {
   const { uid } = req.params;
 
   // Check if the UID is a valid string and has exactly 32 characters
-  if (typeof uid !== 'string' || uid.trim() === '') {
+  if (typeof uid == 'string' || uid.trim() === '') {
     return res.status(400).json({
       success: false,
       message: 'Invalid UID provided.',
