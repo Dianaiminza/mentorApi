@@ -1011,22 +1011,34 @@ var query = mentorsRef.where('mentorId', '==', req.params.id).get()
  *       500:
  *         description: Internal server error.
  */
-
 app.delete('/user/delete/:id', async (req, res) => {
   const { uid } = req.params;
 
+  // Check if the UID is a valid non-empty string
+  if (typeof uid !== 'string' || uid.trim() === '' || uid.length > 128) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid ID provided.',
+    });
+  }
+
   try {
+    console.log(`Attempting to delete user with UID: ${uid}`); // Debugging line
+
     // Delete the user from Firebase Authentication
     await admin.auth().deleteUser(uid);
+    console.log(`Deleted user from Firebase Authentication with ID: ${uid}`); // Debugging line
     
     // Optionally, delete the user from Firestore
     await db.collection('Users').doc(uid).delete();
+    console.log(`Deleted user from Firestore with ID: ${uid}`); // Debugging line
 
     res.status(200).json({
       success: true,
-      message: `User with ID: ${uid} deleted successfully`,
+      message: `User with UID: ${uid} deleted successfully`,
     });
   } catch (err) {
+    console.error(`Error deleting user with ID: ${uid}`, err); // Debugging line
     res.status(500).json({
       success: false,
       message: 'Error deleting user',
@@ -1069,30 +1081,41 @@ app.delete('/user/delete/:id', async (req, res) => {
  *       500:
  *         description: Internal server error.
  */
-
- app.delete('/mentor/delete/:id', async (req, res) => {
+app.delete('/mentor/delete/:id', async (req, res) => {
   const { uid } = req.params;
 
+  // Check if the UID is a valid non-empty string
+  if (typeof uid !== 'string' || uid.trim() === '' || uid.length > 128) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid ID provided.',
+    });
+  }
+
   try {
+    console.log(`Attempting to delete mentor with UID: ${uid}`); // Debugging line
+
     // Delete the user from Firebase Authentication
     await admin.auth().deleteUser(uid);
+    console.log(`Deleted mentor from Firebase Authentication with ID: ${uid}`); // Debugging line
     
     // Optionally, delete the user from Firestore
     await db.collection('Mentors').doc(uid).delete();
+    console.log(`Deleted mentor from Firestore with ID: ${uid}`); // Debugging line
 
     res.status(200).json({
       success: true,
-      message: `Mentor with ID: ${uid} deleted successfully`,
+      message: `Mentor with UID: ${uid} deleted successfully`,
     });
   } catch (err) {
+    console.error(`Error deleting mentor with ID: ${uid}`, err); // Debugging line
     res.status(500).json({
       success: false,
-      message: 'Error deleting user',
+      message: 'Error deleting mentor',
       error: err.message,
     });
   }
 });
-
  /**
  * @swagger
  * /sessions:
