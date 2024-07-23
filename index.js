@@ -374,7 +374,7 @@ app.post('/createMentor', async (req, res) => {
 const isValidEmail = (email) => {
   // Improved regular expression for email validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email) && email.match(/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i) && email.endsWith('.com');
+  return emailRegex.test(email) && email.match(/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i);
 };
 
 /**
