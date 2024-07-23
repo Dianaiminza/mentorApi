@@ -32,9 +32,15 @@ app.use(express.static('public'))
 // app.use(express.static(path.join(__dirname, '//frontend/public')));
 
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://mentor-39067-default-rtdb.firebaseio.com",
-    storageBucket: process.env.BUCKET_URL
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://mentor-39067-default-rtdb.firebaseio.com",
+  apiKey: "AIzaSyAzGh3DGwD0GGgoYaMebi0s9WaDE1YoNyM",
+  authDomain: "mentor-39067.firebaseapp.com",
+  projectId: "mentor-39067",
+  storageBucket: "mentor-39067.appspot.com",
+  messagingSenderId: "1061416844001",
+  appId: "1:1061416844001:web:d4b6d10a05151d4480d5a0",
+  measurementId: "G-2X085RXJTL"
 });
 
 const db = admin.firestore();
