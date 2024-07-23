@@ -1014,11 +1014,11 @@ var query = mentorsRef.where('mentorId', '==', req.params.id).get()
 app.delete('/user/delete/:id', async (req, res) => {
   const { uid } = req.params;
 
-  // Check if the UID is a valid non-empty string
-  if (typeof uid !== 'string' || uid.trim() === '' || uid.length > 128) {
+  // Check if the UID is a valid string and has exactly 32 characters
+  if (typeof uid !== 'string' || uid.trim() === '') {
     return res.status(400).json({
       success: false,
-      message: 'Invalid ID provided.',
+      message: 'Invalid UID provided.',
     });
   }
 
@@ -1084,11 +1084,11 @@ app.delete('/user/delete/:id', async (req, res) => {
 app.delete('/mentor/delete/:id', async (req, res) => {
   const { uid } = req.params;
 
-  // Check if the UID is a valid non-empty string
-  if (typeof uid !== 'string' || uid.trim() === '' || uid.length > 128) {
+  // Check if the UID is a valid string and has exactly 32 characters
+  if (typeof uid !== 'string' || uid.trim() === '') {
     return res.status(400).json({
       success: false,
-      message: 'Invalid ID provided.',
+      message: 'Invalid UID provided.',
     });
   }
 
