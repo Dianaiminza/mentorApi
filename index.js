@@ -371,6 +371,12 @@ app.post('/createMentor', async (req, res) => {
 });
  
 
+const isValidEmail = (email) => {
+  // Improved regular expression for email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email) && email.match(/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i) && email.endsWith('.com');
+};
+
 /**
  * @swagger
  * /signup:
@@ -465,7 +471,12 @@ app.post('/signup', async (req, res) => {
       message: 'Email and password are required'
     });
   }
-
+  if (!isValidEmail(email)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Email address is improperly formatted. It must end with .com',
+    });
+  }
   try {
 
     // Check if a user already exists in the database
@@ -1000,22 +1011,28 @@ var query = mentorsRef.where('mentorId', '==', req.params.id).get()
  *       500:
  *         description: Internal server error.
  */
+
 app.delete('/user/delete/:id', async (req, res) => {
- var postsRef = db.collection('Users');
- var query = postsRef.where('userId', '==', req.params.id).get()
-     .then(snapshot => {
-       snapshot.forEach(doc => {
-         console.log(doc.id, '=>', doc.data());
-         var deleteDoc = db.collection('Users').doc(doc.id).delete();
-       });
-     })
-     res.json({
-       success:true,
-       message:"user successfully deleted"
-     })
-     .catch(err => {
-       console.log('Error getting users', err);
-     });
+  const { uid } = req.params;
+
+  try {
+    // Delete the user from Firebase Authentication
+    await admin.auth().deleteUser(uid);
+    
+    // Optionally, delete the user from Firestore
+    await db.collection('Users').doc(uid).delete();
+
+    res.status(200).json({
+      success: true,
+      message: `User with ID: ${uid} deleted successfully`,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting user',
+      error: err.message,
+    });
+  }
 });
 
 /**
@@ -1053,23 +1070,28 @@ app.delete('/user/delete/:id', async (req, res) => {
  *         description: Internal server error.
  */
 
-app.delete('/mentor/delete/:id', async (req, res) => {
-  var postsRef = db.collection('Mentors');
-  var query = postsRef.where('mentorId', '==', req.params.id).get()
-      .then(snapshot => {
-        snapshot.forEach(doc => {
-          console.log(doc.id, '=>', doc.data());
-          var deleteDoc = db.collection('Mentors').doc(doc.id).delete();
-        });
-      })
-      res.json({
-        success:true,
-        message:"mentor successfully deleted"
-      })
-      .catch(err => {
-        console.log('Error getting mentors', err);
-      });
- });
+ app.delete('/mentor/delete/:id', async (req, res) => {
+  const { uid } = req.params;
+
+  try {
+    // Delete the user from Firebase Authentication
+    await admin.auth().deleteUser(uid);
+    
+    // Optionally, delete the user from Firestore
+    await db.collection('Mentors').doc(uid).delete();
+
+    res.status(200).json({
+      success: true,
+      message: `Mentor with ID: ${uid} deleted successfully`,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting user',
+      error: err.message,
+    });
+  }
+});
 
  /**
  * @swagger
