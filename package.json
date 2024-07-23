@@ -28,6 +28,7 @@
     "netlify-cli": "^17.5.1",
     "netlify-lambda": "^2.0.16",
     "node": "^22.4.0",
+    "nodemailer": "^6.9.14",
     "salted-md5": "^4.0.8",
     "serverless-http": "^3.2.0",
     "socket.io": "^4.0.1",

@@ -11,6 +11,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./swagger');
 const bcrypt = require('bcryptjs');
 const serverless = require("serverless-http");
+const nodemailer = require('nodemailer');
 var { getToken, isAuth } =require('./util');
 app.use(cors());
 app.use(bodyParser.json());
@@ -56,6 +57,29 @@ message:"file not uploaded"
 }
 })
 
+const transporter = nodemailer.createTransport({
+  service: 'gmail', // e.g., 'gmail'
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
+const sendNotificationEmail = (email) => {
+  const mailOptions = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: 'Welcome to the Mentors Platform!',
+    text: 'Thank you for signing up on the Mentors Platform. We are excited to have you!',
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error('Error sending email:', error);
+    } else {
+      console.log('Email sent:', info.response);
+    }
+  });
+};
 
 async function storeUser(User) {
     const docRef = await db.collection('Users').add(User)
@@ -476,6 +500,9 @@ app.post('/signup', async (req, res) => {
       token: getToken(userRecord)
     });
 
+    // Send notification email
+    sendNotificationEmail(email);
+    
     res.status(201).json({
       uid: userRecord.uid,
       email: userRecord.email,
