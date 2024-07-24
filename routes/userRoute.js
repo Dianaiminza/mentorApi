@@ -1,10 +1,10 @@
-var  express =require('express');
-var User =require('../models/userModel');
-var { getToken, isAuth } =require('../util');
+var express = require('express');
+var User = require('../models/userModel');
+var { getToken, isAuth } = require('../util');
 var bcrypt = require('bcryptjs');
-var router=express.Router();
+var router = express.Router();
 const nodemailer = require('nodemailer');
-var { isAuth, isAdmin } =require('../util');
+var { isAuth, isAdmin } = require('../util');
 
 const transporter = nodemailer.createTransport({
   service: 'gmail', // e.g., 'gmail'
@@ -29,7 +29,65 @@ const sendNotificationEmail = (email) => {
     }
   });
 };
-
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   put:
+ *     summary: Edit user by ID
+ *     description: Update user details based on the provided user ID.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the user to be updated.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: The name of the user
+ *               email:
+ *                 type: string
+ *                 description: The email of the user
+ *               password:
+ *                 type: string
+ *                 description: The password of the user
+ *     responses:
+ *       200:
+ *         description: User successfully updated.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: The ID of the updated user
+ *                 name:
+ *                   type: string
+ *                   description: The updated name of the user
+ *                 email:
+ *                   type: string
+ *                   description: The updated email of the user
+ *                 isAdmin:
+ *                   type: boolean
+ *                   description: Indicates if the user is an admin
+ *                 token:
+ *                   type: string
+ *                   description: JWT token for the updated user
+ *       400:
+ *         description: Bad request if invalid input data is provided.
+ *       404:
+ *         description: User not found with the provided ID.
+ *       500:
+ *         description: Internal server error.
+ */
 router.put('/:id', isAuth, async (req, res) => {
   const userId = req.params.id;
   const user = await User.findById(userId);
@@ -49,7 +107,53 @@ router.put('/:id', isAuth, async (req, res) => {
     res.status(404).send({ message: 'User Not Found' });
   }
 });
-
+/**
+ * @swagger
+ * /api/users/signin:
+ *   post:
+ *     summary: User Sign-In
+ *     description: Authenticate a user and return user details and a JWT token.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: The email of the user
+ *               password:
+ *                 type: string
+ *                 description: The password of the user
+ *     responses:
+ *       200:
+ *         description: Successful sign-in.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: The ID of the authenticated user
+ *                 name:
+ *                   type: string
+ *                   description: The name of the authenticated user
+ *                 email:
+ *                   type: string
+ *                   description: The email of the authenticated user
+ *                 isAdmin:
+ *                   type: boolean
+ *                   description: Indicates if the user is an admin
+ *                 token:
+ *                   type: string
+ *                   description: JWT token for the authenticated user
+ *       401:
+ *         description: Invalid email or password.
+ *       500:
+ *         description: Internal server error.
+ */
 router.post('/signin', async (req, res) => {
   const signinUser = await User.findOne({
     email: req.body.email,
@@ -69,7 +173,7 @@ router.post('/signin', async (req, res) => {
 });
 /**
  * @swagger
- * /register:
+ * /api/users/register:
  *   post:
  *     summary: User Sign up
  *     description: Users sign up.
@@ -122,32 +226,32 @@ router.post('/signin', async (req, res) => {
  *         description: Internal server error.
  */
 router.post('/register', async (req, res) => {
-  bcrypt.hash(req.body.password,8, async(err,hash)=>{  
-  const user = new User({
-    name: req.body.name,
-    email: req.body.email,
-    password: hash,
-  });
-  const newUser = await user.save();
-  // Send notification email
-  sendNotificationEmail(email);
-  if (newUser) {
-    res.send({
-      _id: newUser.id,
-      name: newUser.name,
-      email: newUser.email,
-      isAdmin: newUser.isAdmin,
-      token: getToken(newUser),
+  bcrypt.hash(req.body.password, 8, async (err, hash) => {
+    const user = new User({
+      name: req.body.name,
+      email: req.body.email,
+      password: hash,
     });
-  } else {
-    res.status(401).send({ message: 'Invalid User Data.' });
-  }
+    const newUser = await user.save();
+    // Send notification email
+    sendNotificationEmail(email);
+    if (newUser) {
+      res.send({
+        _id: newUser.id,
+        name: newUser.name,
+        email: newUser.email,
+        isAdmin: newUser.isAdmin,
+        token: getToken(newUser),
+      });
+    } else {
+      res.status(401).send({ message: 'Invalid User Data.' });
+    }
 
   })
 });
 /**
  * @swagger
- * /users:
+ * /api/users:
  *   get:
  *     summary: Get users
  *     description: Retrieve users.
@@ -159,19 +263,63 @@ router.get("/", async (req, res) => {
   const users = await User.find();
   res.send(users);
 });
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   get:
+ *     summary: Get User by ID
+ *     description: Fetches user details by their ID.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the user to retrieve
+ *     responses:
+ *       200:
+ *         description: Successful response with user details.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: The ID of the user
+ *                 name:
+ *                   type: string
+ *                   description: The name of the user
+ *                 email:
+ *                   type: string
+ *                   description: The email of the user
+ *                 isAdmin:
+ *                   type: boolean
+ *                   description: Indicates if the user is an admin
+ *       404:
+ *         description: User not found.
+ *       500:
+ *         description: Internal server error.
+ */
+router.get('/:id', isAuth, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
 
-router.get("/:id", isAuth, async (req, res) => {
-  
-  const user = await User.findOne({ _id: req.params.id });
-  if (user) {
-    res.send(user);
-  } else {
-    res.status(404).send("User Not Found.")
+    if (user) {
+      res.json(user);
+    } else {
+      res.status(404).send('User Not Found.');
+    }
+  } catch (err) {
+    res.status(500).send({
+      message: 'Internal Server Error',
+      error: err.message,
+    });
   }
 });
 /**
  * @swagger
- * /:id:
+ * /api/users/:id:
  *   delete:
  *     summary: Delete user per id
  *     description: Delete user  details.
@@ -190,7 +338,7 @@ router.delete("/:id", isAuth, isAdmin, async (req, res) => {
 });
 /**
  * @swagger
- * /createadmin:
+ * /api/users/createadmin:
  *   get:
  *     summary: Get admin details
  *     description: Retrieve admin details.
@@ -213,4 +361,4 @@ router.get('/createadmin', async (req, res) => {
   }
 });
 
-module.exports=router; 
+module.exports = router; 
