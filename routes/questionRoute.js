@@ -125,42 +125,47 @@ router.post('/create', async (req, res) => {
  *     responses:
  *       200:
  *         description: Questions retrieved successfully.
- *     tags:
- *       - Questions
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: string
- *                     description: The ID of the question
- *                   title:
- *                     type: string
- *                     description: The title of the question
- *                   content:
- *                     type: string
- *                     description: The content of the question
- *                   tags:
- *                     type: array
- *                     items:
- *                       type: object
- *                       properties:
- *                         title:
- *                           type: string
- *                           description: The title of the tag
- *                         content:
- *                           type: string
- *                           description: The content of the tag
- *                   createdAt:
- *                     type: string
- *                     description: The timestamp of when the question was created
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: Request success status
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         description: The ID of the question
+ *                       title:
+ *                         type: string
+ *                         description: The title of the question
+ *                       content:
+ *                         type: string
+ *                         description: The content of the question
+ *                       tags:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             title:
+ *                               type: string
+ *                               description: The title of the tag
+ *                             content:
+ *                               type: string
+ *                               description: The content of the tag
+ *                       createdAt:
+ *                         type: string
+ *                         description: The timestamp of when the question was created
  *       500:
  *         description: Internal server error.
+ *     tags:
+ *       - Questions
  */
-
 router.get('/', async (req, res) => {
     try {
         const questions = await Question.find();

@@ -58,6 +58,9 @@ const sendNotificationEmail = (email) => {
  *               password:
  *                 type: string
  *                 description: The password of the user
+ *             required:
+ *               - email
+ *               - password
  *     responses:
  *       200:
  *         description: User successfully updated.
@@ -87,6 +90,8 @@ const sendNotificationEmail = (email) => {
  *         description: User not found with the provided ID.
  *       500:
  *         description: Internal server error.
+ *     tags:
+ *       - Users
  */
 router.put('/:id', isAuth, async (req, res) => {
   const userId = req.params.id;
@@ -122,10 +127,16 @@ router.put('/:id', isAuth, async (req, res) => {
  *             properties:
  *               email:
  *                 type: string
+ *                 format: email
  *                 description: The email of the user
+ *                 example: user@example.com
  *               password:
  *                 type: string
  *                 description: The password of the user
+ *                 example: yourpassword123
+ *             required:
+ *               - email
+ *               - password
  *     responses:
  *       200:
  *         description: Successful sign-in.
@@ -153,25 +164,48 @@ router.put('/:id', isAuth, async (req, res) => {
  *         description: Invalid email or password.
  *       500:
  *         description: Internal server error.
+ *     tags:
+ *       - Users
  */
 router.post('/signin', async (req, res) => {
-  const signinUser = await User.findOne({
-    email: req.body.email,
-    password: req.body.password,
-  });
-  if (signinUser) {
-    res.send({
-      _id: signinUser.id,
-      name: signinUser.name,
-      email: signinUser.email,
-      isAdmin: signinUser.isAdmin,
-      token: getToken(signinUser),
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and password are required.' });
+  }
+
+  try {
+    // Find the user by email
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid Email or Password.' });
+    }
+
+    // Check if the password matches
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid Email or Password.' });
+    }
+
+    // Generate a JWT token
+    const token = getToken(user);
+
+    res.status(200).json({
+      _id: user.id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      token,
     });
-  } else {
-    res.status(401).send({ message: 'Invalid Email or Password.' });
+  } catch (err) {
+    res.status(500).json({
+      message: 'Internal server error.',
+      error: err.message,
+    });
   }
 });
-
 /**
  * @swagger
  * /api/users/register:
