@@ -225,6 +225,60 @@ router.post('/signin', async (req, res) => {
  *       500:
  *         description: Internal server error.
  */
+/**
+ * @swagger
+ * /api/users/register:
+ *   post:
+ *     summary: Register a new user
+ *     description: Registers a new user with email, name, and password. Password is hashed before saving. Sends a notification email upon successful registration.
+ *     tags:
+ *       - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: The name of the user
+ *               email:
+ *                 type: string
+ *                 description: The email of the user
+ *               password:
+ *                 type: string
+ *                 description: The password for the user
+ *     responses:
+ *       201:
+ *         description: User registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: The ID of the newly created user
+ *                 name:
+ *                   type: string
+ *                   description: The name of the newly created user
+ *                 email:
+ *                   type: string
+ *                   description: The email of the newly created user
+ *                 isAdmin:
+ *                   type: boolean
+ *                   description: Indicates if the user is an admin
+ *                 token:
+ *                   type: string
+ *                   description: Authentication token for the user
+ *       400:
+ *         description: Bad request. Missing required fields or invalid data.
+ *       409:
+ *         description: Conflict. Email already exists.
+ *       500:
+ *         description: Internal server error
+ */
 router.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -236,6 +290,16 @@ router.post('/register', async (req, res) => {
   }
 
   try {
+    // Check if the email already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({
+        success: false,
+        message: 'Email already exists'
+      });
+    }
+
+    // Hash the password
     bcrypt.hash(password, 8, async (err, hash) => {
       if (err) {
         return res.status(500).json({
@@ -245,6 +309,7 @@ router.post('/register', async (req, res) => {
         });
       }
 
+      // Create and save the new user
       const user = new User({
         name,
         email,
