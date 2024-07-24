@@ -171,60 +171,7 @@ router.post('/signin', async (req, res) => {
     res.status(401).send({ message: 'Invalid Email or Password.' });
   }
 });
-/**
- * @swagger
- * /api/users/register:
- *   post:
- *     summary: User Sign up
- *     description: Users sign up.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *               - name
- *             properties:
- *               email:
- *                 type: string
- *                 description: User's email
- *               password:
- *                 type: string
- *                 description: User's password
- *               name:
- *                 type: string
- *                 description: User's  name
- *     responses:
- *       201:
- *         description: User created successfully.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: string
- *                   description: User ID
- *                 email:
- *                   type: string
- *                   description: User's email
- *                 Name:
- *                   type: string
- *                   description: User's f name
- *                 success:
- *                   type: boolean
- *                   description: Request success status
- *                 message:
- *                   type: string
- *                   description: Success message
- *       400:
- *         description: Bad request.
- *       500:
- *         description: Internal server error.
- */
+
 /**
  * @swagger
  * /api/users/register:
@@ -353,7 +300,7 @@ router.post('/register', async (req, res) => {
  *   get:
  *     summary: Get users
  *     description: Retrieve users.
- * tags:
+ *     tags:
  *       - Users
  *     responses:
  *       200:
@@ -369,7 +316,7 @@ router.get("/", async (req, res) => {
  *   get:
  *     summary: Get User by ID
  *     description: Fetches user details by their ID.
- * tags:
+ *     tags:
  *       - Users
  *     parameters:
  *       - in: path
@@ -425,7 +372,7 @@ router.get('/:id', isAuth, async (req, res) => {
  *   delete:
  *     summary: Delete user per id
  *     description: Delete user  details.
- * tags:
+ *     tags:
  *       - Users
  *     responses:
  *       200:
@@ -446,7 +393,7 @@ router.delete("/:id", isAuth, isAdmin, async (req, res) => {
  *   get:
  *     summary: Get admin details
  *     description: Retrieve admin details.
- * tags:
+ *     tags:
  *       - Users
  *     responses:
  *       200:
