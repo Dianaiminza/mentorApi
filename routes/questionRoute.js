@@ -5,7 +5,7 @@ var router = express.Router();
 
 /**
  * @swagger
- * /api/questions/create:
+ * /api/question/create:
  *   post:
  *     summary: Create a new question
  *     description: Creates a new question with optional tags.
@@ -116,7 +116,7 @@ router.post('/create', async (req, res) => {
 
 /**
  * @swagger
- * /api/questions:
+ * /api/question:
  *   get:
  *     summary: Get all questions
  *     description: Retrieve a list of all questions.
