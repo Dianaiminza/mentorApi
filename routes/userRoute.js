@@ -17,8 +17,8 @@ const sendNotificationEmail = (email) => {
   const mailOptions = {
     from: process.env.EMAIL,
     to: email,
-    subject: 'Welcome to the Mentors Platform!',
-    text: 'Thank you for signing up on the Mentors Platform. We are excited to have you!',
+    subject: 'Welcome to HerTechQuest Platform!',
+    text: 'Thank you for signing up on HerTechQuest Platform. We are excited to have you!',
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
@@ -234,7 +234,7 @@ router.post('/register', async (req, res) => {
     });
     const newUser = await user.save();
     // Send notification email
-    sendNotificationEmail(email);
+    sendNotificationEmail(req.body.email);
     if (newUser) {
       res.send({
         _id: newUser.id,

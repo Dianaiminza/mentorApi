@@ -3,11 +3,9 @@ var express = require('express');
 var bcrypt = require('bcryptjs');
 var router = express.Router();
 
-
-
 /**
  * @swagger
- * /api/questions:
+ * /api/questions/create:
  *   post:
  *     summary: Create a new question
  *     description: Creates a new question with optional tags.

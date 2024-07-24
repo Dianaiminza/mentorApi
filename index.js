@@ -34,14 +34,12 @@ const mongodbUrl = process.env.MONGODB_URL
   || 'mongodb+srv://Captain:Captain224@cluster0.ojw4zwx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
 mongoose.connect(mongodbUrl, {
-  useNewUrlParser: true,
   writeConcern: {
     w: 'majority',
     j: true,
     wtimeout: 1000
   }
-}).catch(
-  (error) => console.error('MongoDB connection error:', error));
+}).catch(error => console.error('MongoDB connection error:', error));
 
 app.use(bodyParser.json());
 app.use('/api/users', userRoute);
