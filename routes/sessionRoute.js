@@ -12,6 +12,8 @@ var router = express.Router();
  *   put:
  *     summary: Accept a mentorship session
  *     description: Updates the status of a mentorship session to 'accepted'.
+ *     tags:
+ *       - Sessions
  *     parameters:
  *       - in: path
  *         name: sessionId
@@ -136,6 +138,8 @@ router.put('/:sessionId/accept', isAuth, async (req, res) => {
 *   put:
 *     summary: Reject a mentorship session
 *     description: Updates the status of a mentorship session to 'rejected'.
+*     tags:
+*       - Sessions
 *     parameters:
 *       - in: path
 *         name: sessionId
@@ -371,6 +375,8 @@ router.post('/create', isAuth, async (req, res) => {
  *   get:
  *     summary: Fetch mentorship sessions
  *     description: Fetches mentorship sessions based on the user ID and role.
+ *     tags:
+ *       - Sessions
  *     parameters:
  *       - in: query
  *         name: userId
@@ -473,6 +479,8 @@ router.get('/', isAuth, async (req, res) => {
  *   post:
  *     summary: Review a mentorship session
  *     description: Review a mentorship session after the session is completed.
+ *     tags:
+ *       - Sessions
  *     parameters:
  *       - in: path
  *         name: sessionId
@@ -480,6 +488,8 @@ router.get('/', isAuth, async (req, res) => {
  *         schema:
  *           type: string
  *         description: The ID of the mentorship session
+  *     tags:
+ *       - Sessions
  *     requestBody:
  *       required: true
  *       content:
@@ -602,6 +612,8 @@ router.post('/:sessionId/review', isAuth, async (req, res) => {
 *   delete:
 *     summary: Delete a mentorship session review
 *     description: Delete a review for a mentorship session.
+*     tags:
+*       - Sessions
 *     parameters:
 *       - in: path
 *         name: sessionId

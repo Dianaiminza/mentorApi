@@ -230,7 +230,7 @@ router.post('/signin', async (req, res) => {
  * /api/users/register:
  *   post:
  *     summary: Register a new user
- *     description: Registers a new user with email, name, and password. Password is hashed before saving. Sends a notification email upon successful registration.
+ *     description: Registers a new user with email, name, and password.
  *     tags:
  *       - Users
  *     requestBody:
@@ -288,7 +288,14 @@ router.post('/register', async (req, res) => {
       message: 'Name, email, and password are required'
     });
   }
-
+  // Validate placeholder values
+  const placeholderValues = ['string', 'password', 'name'];
+  if (placeholderValues.includes(name) || placeholderValues.includes(email) || placeholderValues.includes(password)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid data provided'
+    });
+  }
   try {
     // Check if the email already exists
     const existingUser = await User.findOne({ email });
@@ -346,6 +353,8 @@ router.post('/register', async (req, res) => {
  *   get:
  *     summary: Get users
  *     description: Retrieve users.
+ * tags:
+ *       - Users
  *     responses:
  *       200:
  *         description: Successful response.
@@ -360,6 +369,8 @@ router.get("/", async (req, res) => {
  *   get:
  *     summary: Get User by ID
  *     description: Fetches user details by their ID.
+ * tags:
+ *       - Users
  *     parameters:
  *       - in: path
  *         name: id
@@ -414,6 +425,8 @@ router.get('/:id', isAuth, async (req, res) => {
  *   delete:
  *     summary: Delete user per id
  *     description: Delete user  details.
+ * tags:
+ *       - Users
  *     responses:
  *       200:
  *         description: Successful response.
@@ -433,6 +446,8 @@ router.delete("/:id", isAuth, isAdmin, async (req, res) => {
  *   get:
  *     summary: Get admin details
  *     description: Retrieve admin details.
+ * tags:
+ *       - Users
  *     responses:
  *       200:
  *         description: Successful response of admin details.

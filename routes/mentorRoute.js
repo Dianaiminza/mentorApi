@@ -11,6 +11,8 @@ var { isAuth, isAdmin } = require('../util');
  *   post:
  *     summary: Create a mentor user
  *     description: Endpoint to create a mentor user.
+ *     tags:
+ *       - Mentors
  *     requestBody:
  *       required: true
  *       content:

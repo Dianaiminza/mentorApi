@@ -9,6 +9,8 @@ var router = express.Router();
  *   post:
  *     summary: Create a new question
  *     description: Creates a new question with optional tags.
+ *     tags:
+ *       - Questions
  *     requestBody:
  *       required: true
  *       content:
@@ -123,6 +125,8 @@ router.post('/create', async (req, res) => {
  *     responses:
  *       200:
  *         description: Questions retrieved successfully.
+ *     tags:
+ *       - Questions
  *         content:
  *           application/json:
  *             schema:

@@ -9,6 +9,8 @@ var router = express.Router();
  *   post:
  *     summary: Add a tag to a question
  *     description: Adds a new tag to a specified question.
+ *     tags:
+ *       - Tags
  *     parameters:
  *       - in: path
  *         name: questionId
@@ -111,6 +113,8 @@ router.post('/:questionId/tags', async (req, res) => {
 *   get:
 *     summary: Get all tags
 *     description: Retrieve a list of all tags from questions.
+*     tags:
+*       - Tags
 *     responses:
 *       200:
 *         description: Tags retrieved successfully.
