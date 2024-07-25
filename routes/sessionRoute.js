@@ -488,8 +488,6 @@ router.get('/', isAuth, async (req, res) => {
  *         schema:
  *           type: string
  *         description: The ID of the mentorship session
-  *     tags:
- *       - Sessions
  *     requestBody:
  *       required: true
  *       content:
