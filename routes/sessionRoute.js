@@ -8,7 +8,7 @@ var router = express.Router();
 
 /**
  * @swagger
- * /sessions/{sessionId}/accept:
+ *  /api/sessions/{sessionId}/accept:
  *   put:
  *     summary: Accept a mentorship session
  *     description: Updates the status of a mentorship session to 'accepted'.
