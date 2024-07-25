@@ -13,6 +13,7 @@ var sessionRoute = require('./routes/sessionRoute');
 var mentorRoute = require('./routes/mentorRoute');
 var tagRoute = require('./routes/tagRoute');
 var questionRoute = require('./routes/questionRoute');
+var challengeRoute = require('./routes/challengeRoute');
 app.use(cors());
 app.use(bodyParser.json());
 
@@ -41,12 +42,19 @@ mongoose.connect(mongodbUrl, {
   }
 }).catch(error => console.error('MongoDB connection error:', error));
 
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.once('open', () => {
+  console.log('Connected to MongoDB');
+});
+
 app.use(bodyParser.json());
 app.use('/api/users', userRoute);
 app.use('/api/sessions', sessionRoute);
 app.use('/api/mentors', mentorRoute);
 app.use('/api/tags', tagRoute);
 app.use('/api/question', questionRoute);
+app.use('/api/challenges', challengeRoute);
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
