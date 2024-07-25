@@ -156,3 +156,5 @@ router.get('/challenges', async (req, res) => {
         });
     }
 });
+
+module.exports = router; 
