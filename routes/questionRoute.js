@@ -122,7 +122,19 @@ router.post('/create', isAuth, async (req, res) => {
  * /api/questions:
  *   get:
  *     summary: Get all questions
- *     description: Retrieve a list of all questions.
+ *     description: Retrieve a list of all questions with optional search and sorting.
+ *     parameters:
+ *       - in: query
+ *         name: searchKeyword
+ *         schema:
+ *           type: string
+ *         description: Search questions by keyword
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *         enum: [newest, active, unanswered]
+ *         description: Sort questions by newest, active, or unanswered
  *     responses:
  *       200:
  *         description: Questions retrieved successfully.
@@ -133,13 +145,13 @@ router.post('/create', isAuth, async (req, res) => {
  *               properties:
  *                 success:
  *                   type: boolean
- *                   description: Request success status
+ *                   example: true
  *                 data:
  *                   type: array
  *                   items:
  *                     type: object
  *                     properties:
- *                       id:
+ *                       _id:
  *                         type: string
  *                         description: The ID of the question
  *                       title:
@@ -162,6 +174,9 @@ router.post('/create', isAuth, async (req, res) => {
  *                       createdAt:
  *                         type: string
  *                         description: The timestamp of when the question was created
+ *                       updatedAt:
+ *                         type: string
+ *                         description: The timestamp of when the question was last updated
  *       500:
  *         description: Internal server error.
  *     tags:
@@ -169,10 +184,38 @@ router.post('/create', isAuth, async (req, res) => {
  */
 router.get('/', async (req, res) => {
     try {
-        const questions = await Question.find();
+        const searchKeyword = req.query.searchKeyword
+            ? {
+                title: {
+                    $regex: req.query.searchKeyword,
+                    $options: 'i',
+                },
+            }
+            : {};
+
+        let sortOrder;
+        if (req.query.sortOrder) {
+            switch (req.query.sortOrder) {
+                case 'newest':
+                    sortOrder = { createdAt: -1 };
+                    break;
+                case 'active':
+                    sortOrder = { updatedAt: -1 };
+                    break;
+                case 'unanswered':
+                    sortOrder = { 'answers.length': 1, createdAt: -1 };
+                    break;
+                default:
+                    sortOrder = { _id: -1 };
+            }
+        } else {
+            sortOrder = { _id: -1 };
+        }
+
+        const questions = await Question.find({ ...searchKeyword }).sort(sortOrder);
         res.status(200).json({
             success: true,
-            data: questions
+            data: questions,
         });
     } catch (err) {
         res.status(500).json({
@@ -183,4 +226,4 @@ router.get('/', async (req, res) => {
     }
 });
 
-module.exports = router; 
+module.exports = router;
