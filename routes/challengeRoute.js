@@ -62,7 +62,7 @@ var router = express.Router();
  *     tags:
  *       - Challenges
  */
-router.post('/challenges', async (req, res) => {
+router.post('/', async (req, res) => {
     try {
         const { title, description, difficulty } = req.body;
 
@@ -141,7 +141,7 @@ router.post('/challenges', async (req, res) => {
  *       - Challenges
  */
 
-router.get('/challenges', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const challenges = await Challenge.find();
         res.status(200).json({

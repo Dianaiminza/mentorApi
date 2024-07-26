@@ -122,7 +122,19 @@ router.post('/create', isAuth, async (req, res) => {
  * /api/discussions:
  *   get:
  *     summary: Get all discussions
- *     description: Retrieve a list of all discussions.
+ *     description: Retrieve a list of all discussions, with optional sorting by newest, latest activity, and filtering by tag.
+ *     parameters:
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [newest, latestActivity]
+ *         description: Sort discussions by newest or latest activity.
+ *       - in: query
+ *         name: tag
+ *         schema:
+ *           type: string
+ *         description: Filter discussions by tag.
  *     responses:
  *       200:
  *         description: Discussions retrieved successfully.
@@ -133,13 +145,13 @@ router.post('/create', isAuth, async (req, res) => {
  *               properties:
  *                 success:
  *                   type: boolean
- *                   description: Request success status
+ *                   example: true
  *                 data:
  *                   type: array
  *                   items:
  *                     type: object
  *                     properties:
- *                       id:
+ *                       _id:
  *                         type: string
  *                         description: The ID of the discussion
  *                       title:
@@ -162,6 +174,9 @@ router.post('/create', isAuth, async (req, res) => {
  *                       createdAt:
  *                         type: string
  *                         description: The timestamp of when the discussion was created
+ *                       updatedAt:
+ *                         type: string
+ *                         description: The timestamp of the latest activity in the discussion
  *       500:
  *         description: Internal server error.
  *     tags:
@@ -169,7 +184,22 @@ router.post('/create', isAuth, async (req, res) => {
  */
 router.get('/', async (req, res) => {
     try {
-        const discussions = await Question.find();
+        const { sortBy, tag } = req.query;
+
+        let sortOrder = {};
+        if (sortBy === 'newest') {
+            sortOrder = { createdAt: -1 };
+        } else if (sortBy === 'latestActivity') {
+            sortOrder = { updatedAt: -1 };
+        }
+
+        let filter = {};
+        if (tag) {
+            filter = { 'tags.title': tag };
+        }
+
+        const discussions = await Discussion.find(filter).sort(sortOrder);
+
         res.status(200).json({
             success: true,
             data: discussions
@@ -182,5 +212,6 @@ router.get('/', async (req, res) => {
         });
     }
 });
+
 
 module.exports = router; 

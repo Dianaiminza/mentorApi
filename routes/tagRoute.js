@@ -258,7 +258,7 @@ router.get('/', async (req, res) => {
  *       - Tags
  */
 
-router.get('/tags/:id', async (req, res) => {
+router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const questions = await Question.find({ 'tags._id': id });

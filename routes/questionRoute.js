@@ -225,5 +225,87 @@ router.get('/', async (req, res) => {
         });
     }
 });
+/**
+ * @swagger
+ * /api/questions/{id}:
+ *   get:
+ *     summary: Get question by ID
+ *     description: Retrieve a specific question by its ID.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the question to retrieve.
+ *     responses:
+ *       200:
+ *         description: Question retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       description: The ID of the question
+ *                     title:
+ *                       type: string
+ *                       description: The title of the question
+ *                     content:
+ *                       type: string
+ *                       description: The content of the question
+ *                     tags:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           title:
+ *                             type: string
+ *                             description: The title of the tag
+ *                           content:
+ *                             type: string
+ *                             description: The content of the tag
+ *                     createdAt:
+ *                       type: string
+ *                       description: The timestamp of when the question was created
+ *       404:
+ *         description: Question not found.
+ *       500:
+ *         description: Internal server error.
+ *     tags:
+ *       - Questions
+ */
+
+router.get('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const question = await Question.findById(id);
+
+        if (question) {
+            res.status(200).json({
+                success: true,
+                data: question
+            });
+        } else {
+            res.status(404).json({
+                success: false,
+                message: 'Question not found'
+            });
+        }
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching question',
+            error: err.message,
+        });
+    }
+});
 
 module.exports = router;
