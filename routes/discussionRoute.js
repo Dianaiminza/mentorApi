@@ -1,4 +1,4 @@
-var Question = require('../models/questionModel');
+var Discussion = require('../models/discussionModel');
 var express = require('express');
 var bcrypt = require('bcryptjs');
 var router = express.Router();
@@ -6,12 +6,12 @@ var { getToken, isAuth } = require('../util');
 
 /**
  * @swagger
- * /api/questions/create:
+ * /api/discussions/create:
  *   post:
- *     summary: Create a new question
- *     description: Creates a new question with optional tags.
+ *     summary: Create a new discussion
+ *     description: Creates a new discussion with optional tags.
  *     tags:
- *       - Questions
+ *       - Discussions
  *     requestBody:
  *       required: true
  *       content:
@@ -21,10 +21,10 @@ var { getToken, isAuth } = require('../util');
  *             properties:
  *               title:
  *                 type: string
- *                 description: The title of the question
+ *                 description: The title of the discussion
  *               content:
  *                 type: string
- *                 description: The content of the question
+ *                 description: The content of the discussion
  *               tags:
  *                 type: array
  *                 items:
@@ -38,7 +38,7 @@ var { getToken, isAuth } = require('../util');
  *                       description: The content of the tag
  *     responses:
  *       201:
- *         description: Question created successfully.
+ *         description: Discussion created successfully.
  *         content:
  *           application/json:
  *             schema:
@@ -55,13 +55,13 @@ var { getToken, isAuth } = require('../util');
  *                   properties:
  *                     id:
  *                       type: string
- *                       description: The ID of the question
+ *                       description: The ID of the discussion
  *                     title:
  *                       type: string
- *                       description: The title of the question
+ *                       description: The title of the discussion
  *                     content:
  *                       type: string
- *                       description: The content of the question
+ *                       description: The content of the discussion
  *                     tags:
  *                       type: array
  *                       items:
@@ -75,7 +75,7 @@ var { getToken, isAuth } = require('../util');
  *                             description: The content of the tag
  *                     createdAt:
  *                       type: string
- *                       description: The timestamp of when the question was created
+ *                       description: The timestamp of when the discussion was created
  *       400:
  *         description: Bad request.
  *       500:
@@ -93,25 +93,25 @@ router.post('/create', isAuth, async (req, res) => {
     }
 
     try {
-        // Create a new question
-        const newQuestion = new Question({
+        // Create a new discussion
+        const newDiscussion = new Discussion({
             title,
             content,
             tags
         });
 
-        // Save the question to the database
-        const savedQuestion = await newQuestion.save();
+        // Save the discussion to the database
+        const savedDiscussion = await newDiscussion.save();
 
         res.status(201).json({
             success: true,
-            message: 'Question created successfully',
-            data: savedQuestion
+            message: 'Discussion created successfully',
+            data: savedDiscussion
         });
     } catch (err) {
         res.status(500).json({
             success: false,
-            message: 'Error creating question',
+            message: 'Error creating discussion',
             error: err.message,
         });
     }
@@ -119,13 +119,13 @@ router.post('/create', isAuth, async (req, res) => {
 
 /**
  * @swagger
- * /api/questions:
+ * /api/discussions:
  *   get:
- *     summary: Get all questions
- *     description: Retrieve a list of all questions.
+ *     summary: Get all discussions
+ *     description: Retrieve a list of all discussions.
  *     responses:
  *       200:
- *         description: Questions retrieved successfully.
+ *         description: Discussions retrieved successfully.
  *         content:
  *           application/json:
  *             schema:
@@ -141,13 +141,13 @@ router.post('/create', isAuth, async (req, res) => {
  *                     properties:
  *                       id:
  *                         type: string
- *                         description: The ID of the question
+ *                         description: The ID of the discussion
  *                       title:
  *                         type: string
- *                         description: The title of the question
+ *                         description: The title of the discussion
  *                       content:
  *                         type: string
- *                         description: The content of the question
+ *                         description: The content of the discussion
  *                       tags:
  *                         type: array
  *                         items:
@@ -161,23 +161,23 @@ router.post('/create', isAuth, async (req, res) => {
  *                               description: The content of the tag
  *                       createdAt:
  *                         type: string
- *                         description: The timestamp of when the question was created
+ *                         description: The timestamp of when the discussion was created
  *       500:
  *         description: Internal server error.
  *     tags:
- *       - Questions
+ *       - Discussions
  */
 router.get('/', async (req, res) => {
     try {
-        const questions = await Question.find();
+        const discussions = await Question.find();
         res.status(200).json({
             success: true,
-            data: questions
+            data: discussions
         });
     } catch (err) {
         res.status(500).json({
             success: false,
-            message: 'Error fetching questions',
+            message: 'Error fetching discussions',
             error: err.message,
         });
     }

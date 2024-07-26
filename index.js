@@ -14,6 +14,7 @@ var mentorRoute = require('./routes/mentorRoute');
 var tagRoute = require('./routes/tagRoute');
 var questionRoute = require('./routes/questionRoute');
 var challengeRoute = require('./routes/challengeRoute');
+var discussionRoute = require('./routes/discussionRoute');
 app.use(cors());
 app.use(bodyParser.json());
 
@@ -53,7 +54,8 @@ app.use('/api/users', userRoute);
 app.use('/api/sessions', sessionRoute);
 app.use('/api/mentors', mentorRoute);
 app.use('/api/tags', tagRoute);
-app.use('/api/question', questionRoute);
+app.use('/api/questions', questionRoute);
+app.use('/api/discussions', discussionRoute);
 app.use('/api/challenges', challengeRoute);
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
