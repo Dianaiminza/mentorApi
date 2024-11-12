@@ -85,12 +85,13 @@ var { getToken, isAuth } = require('../util');
 router.post('/create', isAuth, async (req, res) => {
     const { title, content, tags } = req.body;
 
-    if (!title || !content || !tags) {
+    if (!title || !content || !tags || tags.length <= 0) {
         return res.status(400).json({
             success: false,
-            message: 'Title,content  and tags are required'
+            message: 'Title, content, and at least one tag are required'
         });
     }
+
 
     try {
         // Create a new discussion

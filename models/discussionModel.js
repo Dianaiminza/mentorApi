@@ -1,8 +1,8 @@
 var mongoose = require('mongoose');
 const tagSchema = new mongoose.Schema(
     {
-        title: { type: String },
-        content: { type: String },
+        title: { type: String, required: true },
+        content: { type: String, required: true },
     },
     {
         timestamps: true,
