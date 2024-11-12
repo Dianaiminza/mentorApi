@@ -344,6 +344,36 @@ router.get("/", async (req, res) => {
   const users = await User.find();
   res.send(users);
 });
+
+/**
+ * @swagger
+ * /api/users/createadmin:
+ *   get:
+ *     summary: Get admin details
+ *     description: Retrieve admin details.
+ *     tags:
+ *       - Users
+ *     responses:
+ *       200:
+ *         description: Successful response of admin details.
+ */
+router.get('/createadmin', async (req, res) => {
+  try {
+    const hash = await bcrypt.hash("Test@123", 8);
+
+    const user = new User({
+      name: 'Captain',
+      email: 'dianaiminza.99@gmail.com',
+      password: hash,
+      isAdmin: true,
+    });
+
+    const newUser = await user.save();
+    res.send(newUser);
+  } catch (error) {
+    res.send({ message: error.message });
+  }
+});
 /**
  * @swagger
  * /api/users/{id}:
@@ -421,31 +451,6 @@ router.delete("/:id", isAuth, isAdmin, async (req, res) => {
     res.status(404).send("Users Not Found.")
   }
 });
-/**
- * @swagger
- * /api/users/createadmin:
- *   get:
- *     summary: Get admin details
- *     description: Retrieve admin details.
- *     tags:
- *       - Users
- *     responses:
- *       200:
- *         description: Successful response of admin details.
- */
-router.get('/createadmin', async (req, res) => {
-  try {
-    const user = new User({
-      name: 'Captain',
-      email: 'dianaiminza.99@gmail.com',
-      password: '4567',
-      isAdmin: true,
-    });
-    const newUser = await user.save();
-    res.send(newUser);
-  } catch (error) {
-    res.send({ message: error.message });
-  }
-});
+
 
 module.exports = router; 
