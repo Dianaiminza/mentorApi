@@ -17,10 +17,10 @@ jobs:
         run: |
           docker build \
             -f Dockerfile \
-            -t captatintest/mentor:latest .
+            -t captatintest/mentor:${{ inputs.version }} .
 
       - name: Docker Login
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
       - name: Docker Push
-        run: docker push captaintest/mentor:latest
+        run: docker push captaintest/mentor:${{ inputs.version }}
