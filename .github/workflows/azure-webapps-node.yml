@@ -47,7 +47,7 @@ jobs:
         rm -rf node_modules
         npm ci
         npm install
-        npm run build --if-present
+        npm run build 
 
     - name: Log in to Docker Hub
       run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
