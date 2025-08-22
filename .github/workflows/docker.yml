@@ -17,7 +17,7 @@ jobs:
         run: |
           docker build \
             -f Dockerfile \
-            -t captaintest/mentor:${{ inputs.version }} .
+            -t captaintest/mentor:latest .
 
       - name: Docker Login
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
